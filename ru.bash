@@ -158,6 +158,10 @@ function ru() {
 		    printf "%s" $fullcmd
 		    return 0
 		fi
+                commandsafter="${@:2}";
+                if [[ $commandsafter ]]; then
+                        fullcmd="$fullcmd $commandsafter";
+                fi
     		echo "$fullcmd"
     		eval "time $fullcmd"
 	else
