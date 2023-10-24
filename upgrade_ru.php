@@ -4,6 +4,7 @@
  * @author relipse
  */
 const START_RU_FUNCTION = '#############################################################startru';
+const START_RU_FUNCTION_ALT = 'myjocompletion () {';
 const END_RU_FUNCTION = '###############################################################endru';
 $opts = getopt('r:b:o:h', ['new-ru:', 'ru:', 'bashrc:', 'dest:', 'out:', 'help']);
 $help = isset($opts['help']) || isset($opts['h']);
@@ -28,9 +29,8 @@ $newRuSource = file_get_contents($newRuSourceFile);
 
 $posStartRu = strpos($newRuSource, START_RU_FUNCTION);
 $posEndRu = strpos($newRuSource, END_RU_FUNCTION);
-
 if ($posStartRu === false) {
-    die(START_RU_FUNCTION . ' not found in: ' . $newRuSourceFile . "\n");
+    die(START_RU_FUNCTION .' not found in: ' . $newRuSourceFile . "\n");
 }
 if ($posEndRu === false) {
     die(END_RU_FUNCTION . ' not found in: ' . $newRuSourceFile . "\n");
@@ -53,10 +53,13 @@ $outFile = $opts['out'] ?? $opts['o'] ?? $bashRcDestFile;
 if ($outFile !== $bashRcDestFile) {
     echo 'Out: ' . $outFile . "\n";
 }
-
+$useAlt = false;
 $bashRcDest = file_get_contents($bashRcDestFile);
-
 $posStartRuBashRc = strpos($bashRcDest, START_RU_FUNCTION);
+if ($posStartRuBashRc === false) {
+    $posStartRuBashRc = strpos($bashRcDest, START_RU_FUNCTION_ALT);
+    $useAlt = true;
+}
 $posEndRuBashRc = strpos($bashRcDest, END_RU_FUNCTION);
 
 if ($posStartRuBashRc === false) {
