@@ -110,7 +110,7 @@ if ($posStartRuBashRc === false) {
 }
 if (!file_exists("$home/ru")){
     mkdir("$home/ru");
-    echo "$home/ru directory created.";
+    echo "$home/ru directory created.\n";
 }else{
-    echo "$home/ru directory already exists.";
+    echo "$home/ru directory already exists.\n";
 }
