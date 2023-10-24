@@ -94,7 +94,7 @@ if ($posStartRuBashRc === false) {
     if ($upgradeToVersion) {
         echo "To Version: $upgradeToVersion\n";
         if ($upgradeToVersion === $fromVersion){
-            die("Same Versions. Doing nothing.\n");
+            die("Same Version. Doing nothing.\n");
         }
     }
     //echo "Found: ";
