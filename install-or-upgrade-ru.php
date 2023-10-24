@@ -1,6 +1,6 @@
 <?php
 /**
- * Usage: Most scenarios, just run: php upgrade_ru.php
+ * Usage: Most scenarios, just run: php install-or-upgrade-ru.php
  * @author relipse
  */
 const START_RU_FUNCTION = '#############################################################startru';
@@ -9,10 +9,10 @@ const END_RU_FUNCTION = '#######################################################
 $opts = getopt('r:b:o:h', ['new-ru:', 'ru:', 'bashrc:', 'dest:', 'out:', 'help']);
 $help = isset($opts['help']) || isset($opts['h']);
 if ($help){
-    die("upgrade_ru.php - Install ru bash function for easy executing/saving commands.\n".
-        "Usage: php upgrade_ru.php [OPTIONS]\n".
+    die("install-or-upgrade-ru.php - Install ru bash function for easy executing/saving commands.\n".
+        "Usage: php install-or-upgrade-ru.php [OPTIONS]\n".
         "Typically you don't need any options, just run (will modify \$HOME/.bashrc):\n".
-        "php upgrade_ru.php\n\n".
+        "php install-or-upgrade-ru.php\n\n".
         "OPTIONS\n".
         "-r,--new-ru             ru.bash file\n".
         "-b,--bashrc,--dest      Where to install to (~/.bashrc typically)\n".
