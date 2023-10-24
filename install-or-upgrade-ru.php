@@ -4,7 +4,7 @@
  * @author relipse
  */
 const START_RU_FUNCTION = '#############################################################startru';
-const START_RU_FUNCTION_ALT = 'myjocompletion () {';
+const START_RU_FUNCTION_ALT = 'myrucompletion () {';
 const END_RU_FUNCTION = '###############################################################endru';
 $opts = getopt('r:b:o:h', ['new-ru:', 'ru:', 'bashrc:', 'dest:', 'out:', 'help']);
 $help = isset($opts['help']) || isset($opts['h']);
