@@ -1,6 +1,6 @@
 <?php
 /**
- * Usage: Run php upgrade_ru.php --new-ru=<ru.bash file> --bashrc=<~/.bashrc>
+ * Usage: Most scenarios, just run: php upgrade_ru.php
  * @author relipse
  */
 const START_RU_FUNCTION = '#############################################################startru';
