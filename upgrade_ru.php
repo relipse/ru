@@ -36,13 +36,14 @@ if ($posEndRu === false) {
     die(END_RU_FUNCTION . ' not found in: ' . $newRuSourceFile . "\n");
 }
 
-$chunk = substr($newRuSource, $posStartRu, $posEndRu);
+$chunk = substr($newRuSource, $posStartRu, $posEndRu-$posStartRu);
 $version = null;
 if (preg_match('/@version (\d+\.\d+)/', $chunk, $matches)) {
     $version = $matches[1] ?? null;
 }
 $upgradeToVersion = $version;
 $home = getenv("HOME");
+echo "Home Dir: $home\n";
 $bashRcDestFile = $opts['b'] ?? $opts['bashrc'] ?? $opts['dest'] ??  $home.'/.bashrc';
 if (!file_exists($bashRcDestFile)) {
     die($bashRcDestFile . ' does not exist.' . "\n");
