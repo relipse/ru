@@ -15,7 +15,7 @@ function ru() {
 # It is similar to jo (https://github.com/relipse/jojumpoff_bash_function)
 #
 # HOW IT WORKS:
-#    Files are stored in $HOME/ru directory ($HOME/ru more precisely)
+#    Files are stored in $HOME/ru directory
 # AUTOMATIC INSTALL
 # 1. PHP needs to be installed.
 # 2. Run php upgrade_ru.php
