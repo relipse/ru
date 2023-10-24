@@ -50,7 +50,6 @@ function ru() {
 	    return 0
 	fi
 
-
 	while :
 	do
 	    case $1 in
