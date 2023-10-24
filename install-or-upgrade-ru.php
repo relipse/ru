@@ -65,7 +65,7 @@ $posEndRuBashRc = strpos($bashRcDest, END_RU_FUNCTION);
 
 if ($posStartRuBashRc === false) {
     if ($posEndRuBashRc !== false) {
-        die(END_RU_FUNCTION . ' found in: ' . $bashRcDestFile . "\n, but not " . START_RU_FUNCTION . "\n");
+        die(END_RU_FUNCTION . ' found in: ' . $bashRcDestFile . "\n, but not " . ($useAlt ? START_RU_FUNCTION_ALT : START_RU_FUNCTION) . "\n");
     } else {
         //nothing in bashrc destination file, just append
         echo "Ru is not currently installed\n";
