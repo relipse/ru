@@ -1,49 +1,112 @@
 <?php
 /**
  * Usage: Run php upgrade_ru.php --new-ru=<ru.bash file> --bashrc=<~/.bashrc>
+ * @author relipse
  */
-const string START_RU_FUNCTION = 'function ru() {';
-const string END_RU_FUNCTION = '###############################################################endru';
-$opts = getopt('r:b:h', ['new-ru:','ru:','bashrc:','dest:','help']);
+const START_RU_FUNCTION = '#############################################################startru';
+const END_RU_FUNCTION = '###############################################################endru';
+$opts = getopt('r:b:o:h', ['new-ru:', 'ru:', 'bashrc:', 'dest:', 'out:', 'help']);
+$help = isset($opts['help']) || isset($opts['h']);
+if ($help){
+    die("upgrade_ru.php - Install ru bash function for easy executing/saving commands.\n".
+        "Usage: php upgrade_ru.php [OPTIONS]\n".
+        "Typically you don't need any options, just run (will modify \$HOME/.bashrc):\n".
+        "php upgrade_ru.php\n\n".
+        "OPTIONS\n".
+        "-r,--new-ru             ru.bash file\n".
+        "-b,--bashrc,--dest      Where to install to (~/.bashrc typically)\n".
+        "-o,--out                if specified, will send here instead and leave .bashrc alone\n".
+        "-h,--help               Show this help\n"
+        );
+}
 $newRuSourceFile = $opts['r'] ?? $opts['ru'] ?? $opts['new-ru'] ?? 'ru.bash';
-if (!file_exists($newRuSourceFile)){
-    echo $newRuSourceFile.' does not exist.'."\n";
-    die('Use --new-ru="ru.bash" to specify new ru source.'."\n");
+if (!file_exists($newRuSourceFile)) {
+    echo $newRuSourceFile . ' does not exist.' . "\n";
+    die('Use --new-ru="ru.bash" to specify new ru source.' . "\n");
 }
 $newRuSource = file_get_contents($newRuSourceFile);
 
 $posStartRu = strpos($newRuSource, START_RU_FUNCTION);
 $posEndRu = strpos($newRuSource, END_RU_FUNCTION);
 
-if ($posStartRu === false){
-  die(START_RU_FUNCTION.' not found in: '.$newRuSourceFile."\n");
+if ($posStartRu === false) {
+    die(START_RU_FUNCTION . ' not found in: ' . $newRuSourceFile . "\n");
 }
-if ($posEndRu === false){
-  die(END_RU_FUNCTION.' not found in: '.$newRuSourceFile."\n");
-}
-
-$bashRcDestFile = $opts['b'] ?? $opts['bashrc'] ?? $opts['dest'] ?? getenv("HOME").'/.bashrc';
-if (!file_exists($bashRcDestFile)){
-  die($bashRcDestFile.' does not exist.'."\n");
+if ($posEndRu === false) {
+    die(END_RU_FUNCTION . ' not found in: ' . $newRuSourceFile . "\n");
 }
 
-$posStartRuBashRc = strpos($bashRcDestFile, START_RU_FUNCTION);
-$posEndRuBashRc = strpos($bashRcDestFile, END_RU_FUNCTION);
+$chunk = substr($newRuSource, $posStartRu, $posEndRu);
+$version = null;
+if (preg_match('/@version (\d+\.\d+)/', $chunk, $matches)) {
+    $version = $matches[1] ?? null;
+}
+$upgradeToVersion = $version;
+$home = getenv("HOME");
+$bashRcDestFile = $opts['b'] ?? $opts['bashrc'] ?? $opts['dest'] ??  $home.'/.bashrc';
+if (!file_exists($bashRcDestFile)) {
+    die($bashRcDestFile . ' does not exist.' . "\n");
+}
+echo 'Source: ' . $newRuSourceFile . "\n";
+echo 'Dest: ' . $bashRcDestFile . "\n";
+$outFile = $opts['out'] ?? $opts['o'] ?? $bashRcDestFile;
+if ($outFile !== $bashRcDestFile) {
+    echo 'Out: ' . $outFile . "\n";
+}
 
-if ($posStartRuBashRc === false){
-  if ($posEndRuBashRc !== false){
-    die(END_RU_FUNCTION.' found in: '.$bashRcDestFile."\n, but not ".START_RU_FUNCTION."\n");
-  }else{
-    //nothing in bashrc destination file, just append
-    //append
-     $bytesWritten = file_put_contents($bashRcDestFile, $newRuSource.PHP_EOL , FILE_APPEND | LOCK_EX);
-     if ($bytesWritten === false){
-       die("File write failed, manually append to ~/.bashrc:\n\n".$newRuSource."\n");
-     }
-  }
-}else if ($posEndRuBashRc === false){
-    die(START_RU_FUNCTION.' found in: '.$bashRcDestFile."\n, but not ".END_RU_FUNCTION."\n");
+$bashRcDest = file_get_contents($bashRcDestFile);
+
+$posStartRuBashRc = strpos($bashRcDest, START_RU_FUNCTION);
+$posEndRuBashRc = strpos($bashRcDest, END_RU_FUNCTION);
+
+if ($posStartRuBashRc === false) {
+    if ($posEndRuBashRc !== false) {
+        die(END_RU_FUNCTION . ' found in: ' . $bashRcDestFile . "\n, but not " . START_RU_FUNCTION . "\n");
+    } else {
+        //nothing in bashrc destination file, just append
+        echo "Ru is not currently installed\n";
+        echo "Version to install: $upgradeToVersion\n";
+        $bytesWritten = file_put_contents($outFile, $bashRcDest.PHP_EOL.$newRuSource);
+        if ($bytesWritten === false) {
+            die("File write failed, manually append to ~/.bashrc:\n\n" . $newRuSource . "\n");
+        } else {
+            //SUCCESS!!!
+            echo "SUCCESS!\n";
+            echo $bytesWritten . ' bytes written.' . "\n";
+        }
+    }
+} else if ($posEndRuBashRc === false) {
+    die(START_RU_FUNCTION . ' found in: ' . $bashRcDestFile . "\n, but not " . END_RU_FUNCTION . "\n");
+} else {
+    $replace = substr($bashRcDest, $posStartRuBashRc, $posEndRuBashRc - $posStartRuBashRc + strlen(END_RU_FUNCTION));
+    $version = null;
+    if (preg_match('/@version (\d+\.\d+)/', $replace, $matches)) {
+        $version = $matches[1] ?? null;
+    }
+    $fromVersion = $version;
+    if ($fromVersion) {
+        echo "Upgrading From Version: $fromVersion\n";
+    }
+    if ($upgradeToVersion) {
+        echo "To Version: $upgradeToVersion\n";
+        if ($upgradeToVersion === $fromVersion){
+            die("Same Versions. Doing nothing.\n");
+        }
+    }
+    //echo "Found: ";
+    //echo $replace;
+    $dest = str_replace($replace, $newRuSource, $bashRcDest);
+    $bytesWritten = file_put_contents($outFile, $dest);
+    if ($bytesWritten === false) {
+        die("File write failed, manually put in ~/.bashrc:\n\n" . $newRuSource . "\n");
+    }
+    //SUCCESS!!
+    echo "SUCCESS!\n";
+    echo $bytesWritten . ' bytes written.' . "\n";
+}
+if (!file_exists("$home/ru")){
+    mkdir("$home/ru");
+    echo "$home/ru directory created.";
 }else{
-  //by here, start and end are found:
-  //TODO
+    echo "$home/ru directory already exists.";
 }

@@ -1,12 +1,11 @@
+#############################################################startru
 myrucompletion () {
         local f;
         for f in ~/ru/"$2"*;
         do [[ -f $f ]] && COMPREPLY+=( "${f##*/}" );
         done
 }
-
 complete -F myrucompletion ru
-
 function ru() {
 ####################################################################
 # ru - a bash function that lets you save/run commands (kind of
@@ -17,7 +16,10 @@ function ru() {
 #
 # HOW IT WORKS:
 #    Files are stored in $HOME/ru directory ($HOME/ru more precisely)
-# INSTALL
+# AUTOMATIC INSTALL
+# 1. PHP needs to be installed.
+# 2. Run php upgrade_ru.php
+# MANUAL INSTALL
 # 1. mkdir ~/ru
 # 2. Copy this whole function up until ##endru into your ~/.bashrc
 # 3. source ~/.bashrc
@@ -28,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 1.2
+# @version 1.5
 ####################################################################
 	# Reset all variables that might be set
 	local verbose=0
@@ -158,18 +160,17 @@ function ru() {
 		    printf "%s" $fullcmd
 		    return 0
 		fi
-                commandsafter="${@:2}";
-                if [[ $commandsafter ]]; then
-                        fullcmd="$fullcmd $commandsafter";
-                fi
-    		echo "$fullcmd"
-    		eval "time $fullcmd"
+    commandsafter="${@:2}";
+    if [[ $commandsafter ]]; then
+            fullcmd="$fullcmd $commandsafter";
+    fi
+    echo "$fullcmd"
+    eval "time $fullcmd"
 	else
 	 	local possible=$(ls $HOME/ru | grep $1)
-                if [[ $possible ]]; then
-                        echo Did you mean: $possible
-                fi
-		#ls $HOME/ru | grep $1
+    if [[ $possible ]]; then
+            echo Did you mean: $possible
+    fi
 	fi
 }
 ###############################################################endru
