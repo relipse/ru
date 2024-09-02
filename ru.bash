@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 1.7
+# @version 1.8
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -94,6 +94,8 @@ function ru() {
             -p | --prefix)
                 if [[ -n $2 ]]; then
                     prefixcmd=$2
+                    # Ensure a trailing space is added if missing
+                    [[ "$prefixcmd" != *" " ]] && prefixcmd="$prefixcmd "
                     shift
                 else
                     echo "Invalid usage. Correct usage is: ru --prefix '<cmd>' <sn>"
@@ -183,7 +185,7 @@ function ru() {
 
         # Apply prefix if specified
         if [[ -n "$prefixcmd" ]]; then
-            fullcmd="$prefixcmd $fullcmd"
+            fullcmd="$prefixcmd$fullcmd"
         fi
 
         commandsafter="${@:2}"
@@ -191,7 +193,8 @@ function ru() {
             fullcmd="$fullcmd $commandsafter"
         fi
 
-        echo "$fullcmd"
+        # Echo the full command before execution
+        echo "Executing: $fullcmd"
         eval "time $fullcmd"
     else
         local possible=$(ls $HOME/ru | grep $1)
