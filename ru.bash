@@ -30,8 +30,9 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 1.9
+# @version 2.0
 ####################################################################
+function ru() {
     # Reset all variables that might be set
     local verbose=0
     local list=0
@@ -43,6 +44,7 @@ function ru() {
     local mkdircount=0
     local printpath=0
     local prefixcmd=""
+    local sn=""
 
     if (( $# == 0 )); then
         ls $HOME/ru
@@ -53,6 +55,7 @@ function ru() {
     do
         case $1 in
             -h | --help | -\?)
+                echo "Entered the help block"  # Debugging statement
                 # Help output
                 echo "Usage: ru <foo>, where <foo> is a file in $HOME/ru/ containing the full directory path."
                 echo "Ru Command line arguments:"
@@ -61,14 +64,16 @@ function ru() {
                 echo "    --list|-l [<foo>]      - show run files with commands, or the command for <foo>"
                 echo "    --add|-a <sn> [<cmd>]  - add/replace <sn> shortname to $HOME/ru with command <cmd> or current dir if not provided."
                 echo "    --rm|-r <sn>           - remove/delete short link."
-                echo "    --prefix|-p <cmd>      - prefix the command with <cmd> when running."
+                echo "    --prefix|-p <cmd> <sn> - prefix the command with <cmd> when running the command for <sn>."
                 return 0
                 ;;
             -s | --show)
+                echo "Entered the show block"  # Debugging statement
                 printpath=1
                 shift
                 ;;
             -l | --list)
+                echo "Entered the list block"  # Debugging statement
                 if [[ -n $2 ]]; then
                     file=$HOME/ru/"$2"
                     if [ -f "$file" ]; then
@@ -92,17 +97,21 @@ function ru() {
                 return 0
                 ;;
             -p | --prefix)
-                if [[ -n $2 ]]; then
+                echo "Entered the prefix block"  # Debugging statement
+                if [[ -n $2 && -n $3 ]]; then
                     prefixcmd=$2
+                    sn=$3
                     # Ensure a trailing space is added if missing
                     [[ "$prefixcmd" != *" " ]] && prefixcmd="$prefixcmd "
-                    shift
+                    echo "Prefix command set to: '$prefixcmd', Short-name set to: '$sn'"  # Debugging statement
+                    shift 2
                 else
                     echo "Invalid usage. Correct usage is: ru --prefix '<cmd>' <sn>"
                     return 0
                 fi
                 ;;
             -r | -rm | --rm)
+                echo "Entered the remove block"  # Debugging statement
                 if [[ -n $2 ]]; then
                     rem=$2
                 else
@@ -112,6 +121,7 @@ function ru() {
                 shift 1
                 ;;
             -a | --add)
+                echo "Entered the add block"  # Debugging statement
                 if [[ -n $2 ]]; then
                     add=$2
                 else
@@ -125,6 +135,7 @@ function ru() {
                 shift 2
                 ;;
             --add=*)
+                echo "Entered the add= block"  # Debugging statement
                 add=${1#*=}
                 if [[ -n $3 ]]; then
                     addcmd=$3
@@ -133,10 +144,12 @@ function ru() {
                 shift 1
                 ;;
             -v | --verbose)
+                echo "Entered the verbose block"  # Debugging statement
                 verbose=$((verbose+1))
                 shift
                 ;;
             --) # End of all options
+                echo "End of options block"  # Debugging statement
                 shift
                 break
                 ;;
@@ -145,11 +158,13 @@ function ru() {
                 shift
                 ;;
             *)  # no more options. Stop while loop
+                echo "No more options, stopping while loop"  # Debugging statement
                 break
                 ;;
         esac
     done
 
+    # Handle the execution logic after argument parsing
     if [[ "$rem" ]]; then
         if [ -f $HOME/ru/"$rem" ]; then
             echo "Removing $rem -> $(cat $HOME/ru/$rem)"
@@ -174,7 +189,7 @@ function ru() {
         return 0;
     fi
 
-    local file=$HOME/ru/"$1"
+    local file=$HOME/ru/"$sn"
     if [ -f "$file" ]; then
         local fullcmd=$(cat $file)
         if [[ "$printpath" -eq 1 ]];
@@ -185,11 +200,10 @@ function ru() {
 
         # Apply prefix if specified
         if [[ -n "$prefixcmd" ]]; then
-            echo "Applying prefix: $prefixcmd"
             fullcmd="$prefixcmd$fullcmd"
         fi
 
-        commandsafter="${@:2}"
+        commandsafter="${@:1}"
         if [[ $commandsafter ]]; then
             fullcmd="$fullcmd $commandsafter"
         fi
@@ -198,7 +212,7 @@ function ru() {
         echo "Executing: $fullcmd"
         eval "time $fullcmd"
     else
-        local possible=$(ls $HOME/ru | grep $1)
+        local possible=$(ls $HOME/ru | grep $sn)
         if [[ $possible ]]; then
             echo "Did you mean: $possible"
         fi
