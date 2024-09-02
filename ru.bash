@@ -18,7 +18,7 @@ function ru() {
 #    Files are stored in $HOME/ru directory
 # AUTOMATIC INSTALL
 # 1. PHP needs to be installed.
-# 2. Run php upgrade_ru.php
+# 2. Run php install-or-upgrade-ru.php
 # MANUAL INSTALL
 # 1. mkdir ~/ru
 # 2. Copy this whole function up until ##endru into your ~/.bashrc
@@ -30,9 +30,8 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 1.6
+# @version 1.7
 ####################################################################
-function ru() {
     # Reset all variables that might be set
     local verbose=0
     local list=0
