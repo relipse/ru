@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.1
+# @version 2.2
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -54,7 +54,6 @@ function ru() {
     do
         case $1 in
             -h | --help | -\?)
-                echo "Entered the help block"  # Debugging statement
                 # Help output
                 echo "Usage: ru <foo>, where <foo> is a file in $HOME/ru/ containing the full directory path."
                 echo "Ru Command line arguments:"
@@ -64,15 +63,14 @@ function ru() {
                 echo "    --add|-a <sn> [<cmd>]  - add/replace <sn> shortname to $HOME/ru with command <cmd> or current dir if not provided."
                 echo "    --rm|-r <sn>           - remove/delete short link."
                 echo "    --prefix|-p <cmd> <sn> - prefix the command with <cmd> when running the command for <sn>."
+                echo "    -v                     - enable verbose mode."
                 return 0
                 ;;
             -s | --show)
-                echo "Entered the show block"  # Debugging statement
                 printpath=1
                 shift
                 ;;
             -l | --list)
-                echo "Entered the list block"  # Debugging statement
                 if [[ -n $2 ]]; then
                     file=$HOME/ru/"$2"
                     if [ -f "$file" ]; then
@@ -96,13 +94,12 @@ function ru() {
                 return 0
                 ;;
             -p | --prefix)
-                echo "Entered the prefix block"  # Debugging statement
                 if [[ -n $2 && -n $3 ]]; then
                     prefixcmd=$2
                     sn=$3
                     # Ensure a trailing space is added if missing
                     [[ "$prefixcmd" != *" " ]] && prefixcmd="$prefixcmd "
-                    echo "Prefix command set to: '$prefixcmd', Short-name set to: '$sn'"  # Debugging statement
+                    [[ $verbose -eq 1 ]] && echo "Prefix command set to: '$prefixcmd', Short-name set to: '$sn'"
                     shift 2
                 else
                     echo "Invalid usage. Correct usage is: ru --prefix '<cmd>' <sn>"
@@ -110,7 +107,6 @@ function ru() {
                 fi
                 ;;
             -r | -rm | --rm)
-                echo "Entered the remove block"  # Debugging statement
                 if [[ -n $2 ]]; then
                     rem=$2
                 else
@@ -120,7 +116,6 @@ function ru() {
                 shift 1
                 ;;
             -a | --add)
-                echo "Entered the add block"  # Debugging statement
                 if [[ -n $2 ]]; then
                     add=$2
                 else
@@ -134,7 +129,6 @@ function ru() {
                 shift 2
                 ;;
             --add=*)
-                echo "Entered the add= block"  # Debugging statement
                 add=${1#*=}
                 if [[ -n $3 ]]; then
                     addcmd=$3
@@ -143,12 +137,10 @@ function ru() {
                 shift 1
                 ;;
             -v | --verbose)
-                echo "Entered the verbose block"  # Debugging statement
-                verbose=$((verbose+1))
+                verbose=1
                 shift
                 ;;
             --) # End of all options
-                echo "End of options block"  # Debugging statement
                 shift
                 break
                 ;;
@@ -157,7 +149,6 @@ function ru() {
                 shift
                 ;;
             *)  # no more options. Stop while loop
-                echo "No more options, stopping while loop"  # Debugging statement
                 break
                 ;;
         esac
@@ -166,7 +157,7 @@ function ru() {
     # Handle the execution logic after argument parsing
     if [[ "$rem" ]]; then
         if [ -f $HOME/ru/"$rem" ]; then
-            echo "Removing $rem -> $(cat $HOME/ru/$rem)"
+            [[ $verbose -eq 1 ]] && echo "Removing $rem -> $(cat $HOME/ru/$rem)"
             rm $HOME/ru/"$rem"
         else
             echo "$rem does not exist"
@@ -181,9 +172,9 @@ function ru() {
     if [[ "$addcmd" ]]; then
         echo "$addcmd" > $HOME/ru/"$add"
         if [ -f $HOME/ru/"$add" ]; then
-            echo "$add - $addcmd added, try: ru $add"
+            [[ $verbose -eq 1 ]] && echo "$add - $addcmd added, try: ru $add"
         else
-            echo "problem adding $add"
+            echo "Problem adding $add"
         fi
         return 0;
     fi
@@ -191,8 +182,7 @@ function ru() {
     local file=$HOME/ru/"$sn"
     if [ -f "$file" ]; then
         local fullcmd=$(cat $file)
-        if [[ "$printpath" -eq 1 ]];
-        then
+        if [[ "$printpath" -eq 1 ]]; then
             printf "%s" "$fullcmd"
             return 0
         fi
@@ -202,13 +192,16 @@ function ru() {
             fullcmd="$prefixcmd$fullcmd"
         fi
 
-        commandsafter="${@:1}"
-        if [[ $commandsafter ]]; then
-            fullcmd="$fullcmd $commandsafter"
+        # Only populate commandsafter if no prefix is being used
+        if [[ -z "$prefixcmd" ]]; then
+            commandsafter="${@:1}"
+            if [[ $commandsafter ]]; then
+                fullcmd="$fullcmd $commandsafter"
+            fi
         fi
 
         # Echo the full command before execution
-        echo "Executing: $fullcmd"
+        [[ $verbose -eq 1 ]] && echo "Executing: $fullcmd"
         eval "time $fullcmd"
     else
         local possible=$(ls $HOME/ru | grep $sn)
