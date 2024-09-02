@@ -30,9 +30,8 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.0
+# @version 2.1
 ####################################################################
-function ru() {
     # Reset all variables that might be set
     local verbose=0
     local list=0
