@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 1.8
+# @version 1.9
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -185,6 +185,7 @@ function ru() {
 
         # Apply prefix if specified
         if [[ -n "$prefixcmd" ]]; then
+            echo "Applying prefix: $prefixcmd"
             fullcmd="$prefixcmd$fullcmd"
         fi
 
