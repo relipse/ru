@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.2
+# @version 2.3
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -44,6 +44,7 @@ function ru() {
     local printpath=0
     local prefixcmd=""
     local sn=""
+    local use_time=1  # Default to use time
 
     if (( $# == 0 )); then
         ls $HOME/ru
@@ -57,12 +58,13 @@ function ru() {
                 # Help output
                 echo "Usage: ru <foo>, where <foo> is a file in $HOME/ru/ containing the full directory path."
                 echo "Ru Command line arguments:"
-                echo "    <foo>                  - run command stored in contents of file $HOME/ru/<foo> (normal usage) "
+                echo "    <foo>                  - run command stored in contents of file $HOME/ru/<foo> (normal usage)"
                 echo "    --show|-s <foo>        - echo command"
                 echo "    --list|-l [<foo>]      - show run files with commands, or the command for <foo>"
                 echo "    --add|-a <sn> [<cmd>]  - add/replace <sn> shortname to $HOME/ru with command <cmd> or current dir if not provided."
                 echo "    --rm|-r <sn>           - remove/delete short link."
                 echo "    --prefix|-p <cmd> <sn> - prefix the command with <cmd> when running the command for <sn>."
+                echo "    -n | --no-time         - run command without using the time command."
                 echo "    -v                     - enable verbose mode."
                 return 0
                 ;;
@@ -87,7 +89,7 @@ function ru() {
                     echo "Listing all rus:"
                     for FILE in $HOME/ru/*;
                     do
-                        echo $(basename -- "$FILE"): 
+                        echo $(basename -- "$FILE"):
                         cat "$FILE"
                     done
                 fi
@@ -97,7 +99,6 @@ function ru() {
                 if [[ -n $2 && -n $3 ]]; then
                     prefixcmd=$2
                     sn=$3
-                    # Ensure a trailing space is added if missing
                     [[ "$prefixcmd" != *" " ]] && prefixcmd="$prefixcmd "
                     [[ $verbose -eq 1 ]] && echo "Prefix command set to: '$prefixcmd', Short-name set to: '$sn'"
                     shift 2
@@ -140,6 +141,10 @@ function ru() {
                 verbose=1
                 shift
                 ;;
+            -n | --no-time)
+                use_time=0  # Disable time for execution
+                shift
+                ;;
             --) # End of all options
                 shift
                 break
@@ -148,7 +153,9 @@ function ru() {
                 echo "WARN: Unknown option (ignored): $1" >&2
                 shift
                 ;;
-            *)  # no more options. Stop while loop
+            *)  # Assign the remaining argument as $sn
+                sn=$1
+                shift
                 break
                 ;;
         esac
@@ -202,7 +209,11 @@ function ru() {
 
         # Echo the full command before execution
         [[ $verbose -eq 1 ]] && echo "Executing: $fullcmd"
-        eval "time $fullcmd"
+        if [[ $use_time -eq 1 ]]; then
+            eval "time $fullcmd"
+        else
+            eval "$fullcmd"
+        fi
     else
         local possible=$(ls $HOME/ru | grep $sn)
         if [[ $possible ]]; then
@@ -210,4 +221,3 @@ function ru() {
         fi
     fi
 }
-###############################################################endru
