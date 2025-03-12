@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.4
+# @version 2.5
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -76,7 +76,7 @@ function ru() {
                 if [[ -n $2 ]]; then
                     file=$HOME/ru/"$2"
                     if [ -f "$file" ]; then
-                        echo "Command stored in $2:"
+                        #echo "Command stored in $2:"
                         cat "$file"
                     else
                         echo "$2 does not exist"
