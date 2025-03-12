@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.3
+# @version 2.4
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -89,8 +89,7 @@ function ru() {
                     echo "Listing all rus:"
                     for FILE in $HOME/ru/*;
                     do
-                        echo $(basename -- "$FILE"):
-                        cat "$FILE"
+                        echo "$(basename -- "$FILE"): $(cat "$FILE")"
                     done
                 fi
                 return 0
