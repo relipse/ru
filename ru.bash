@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.62
+# @version 2.7
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -46,6 +46,8 @@ function ru() {
     local sn=""
     local use_time=1  # Default to use time
     local user_input="ru $*"
+    local switchcmd=""
+    
 
     if (( $# == 0 )); then
         ls $HOME/ru
@@ -72,6 +74,10 @@ function ru() {
                 ;;
             -s | --show)
                 printpath=1
+                shift
+                ;;
+            --switch=*)
+                switchcmd="${1#*=}"
                 shift
                 ;;
             -l | --list)
@@ -195,12 +201,21 @@ function ru() {
         return 0;
     fi
 
+
+
     local file=$HOME/ru/"$sn"
     if [ -f "$file" ]; then
         local fullcmd=$(cat $file)
         if [[ "$printpath" -eq 1 ]]; then
             printf "%s" "$fullcmd"
             return 0
+        fi
+
+        # If --switch was provided, replace the original command (first word) with switchcmd
+        if [[ -n "$switchcmd" ]]; then
+            local oldargs=($fullcmd)
+            local filepart="${oldargs[@]:1}"  # everything after first word
+            fullcmd="$switchcmd $filepart"
         fi
 
         # Apply prefix if specified
@@ -219,7 +234,7 @@ function ru() {
         # Echo the full command before execution
         [[ $verbose -eq 1 ]] && echo "Executing: $fullcmd"
 
-        echo "User typed: $user_input" > "$HOME/.last_ru_command"
+        echo "Last ru: \nUser typed: $user_input" > "$HOME/.last_ru_command"
         echo "Resolved command: $fullcmd" >> "$HOME/.last_ru_command"
 
         if [[ $use_time -eq 1 ]]; then
