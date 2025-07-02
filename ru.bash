@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.7
+# @version 2.74
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -61,22 +61,23 @@ function ru() {
                 # Help output
                 echo "Usage: ru <foo>, where <foo> is a file in $HOME/ru/ containing the full directory path."
                 echo "Ru Command line arguments:"
-                echo "    <foo>                  - run command stored in contents of file $HOME/ru/<foo> (normal usage)"
-                echo "    --show|-s <foo>        - echo command"
-                echo "    --list|-l [<foo>]      - show run files with commands, or the command for <foo>"
-                echo "    --add|-a <sn> [<cmd>]  - add/replace <sn> shortname to $HOME/ru with command <cmd> or current dir if not provided."
-                echo "    --rm|-r <sn>           - remove/delete short link."
-                echo "    --prefix|-p <cmd> <sn> - prefix the command with <cmd> when running the command for <sn>."
-                echo "    -n | --no-time         - run command without using the time command."
-                echo "    --last | --what | -w   - show the last full command executed."
-                echo "    -v                     - enable verbose mode."
+                echo " <foo>                  - run command stored in contents of file $HOME/ru/<foo> (normal usage)"
+                echo " --show|-s <foo>        - echo command"
+                echo " --list|-l [<foo>]      - show run files with commands, or the command for <foo>"
+                echo " --add|-a <sn> [<cmd>]  - add/replace <sn> shortname to $HOME/ru with command <cmd> or current dir if not provided."
+                echo " --rm|-r <sn>           - remove/delete short link."
+                echo " --prefix|-p <cmd> <sn> - prefix the command with <cmd> when running the command for <sn>."
+                echo " -n | --no-time         - run command without using the time command."
+                echo " --last | --what | -w   - show the last full command executed."
+                echo " -v                     - enable verbose mode."
+                echo " --sw=\"<cmd>\" | --swap - swap the command stored in the ru with another command."
                 return 0
                 ;;
             -s | --show)
                 printpath=1
                 shift
                 ;;
-            --switch=*)
+            --sw=* | --swap=*)
                 switchcmd="${1#*=}"
                 shift
                 ;;
@@ -234,7 +235,8 @@ function ru() {
         # Echo the full command before execution
         [[ $verbose -eq 1 ]] && echo "Executing: $fullcmd"
 
-        echo "Last ru: \nUser typed: $user_input" > "$HOME/.last_ru_command"
+        echo "Last ru:" > "$HOME/.last_ru_command"
+        echo "You typed: $user_input" >> "$HOME/.last_ru_command"
         echo "Resolved command: $fullcmd" >> "$HOME/.last_ru_command"
 
         if [[ $use_time -eq 1 ]]; then
