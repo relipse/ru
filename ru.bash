@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.6
+# @version 2.62
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -38,13 +38,14 @@ function ru() {
     local rem=""
     local add=0
     local addcmd=""
-    local allsubcommands="--list -l, --add -a, --help -h ?, -r -rm"
+    local allsubcommands="--list -l, --add -a, --help -h ?, -r -rm, --last --what -w"
     local mkdirp=""
     local mkdircount=0
     local printpath=0
     local prefixcmd=""
     local sn=""
     local use_time=1  # Default to use time
+    local user_input="ru $*"
 
     if (( $# == 0 )); then
         ls $HOME/ru
@@ -65,7 +66,7 @@ function ru() {
                 echo "    --rm|-r <sn>           - remove/delete short link."
                 echo "    --prefix|-p <cmd> <sn> - prefix the command with <cmd> when running the command for <sn>."
                 echo "    -n | --no-time         - run command without using the time command."
-                echo "    --last | ?             - show the last full command executed."
+                echo "    --last | --what | -w   - show the last full command executed."
                 echo "    -v                     - enable verbose mode."
                 return 0
                 ;;
@@ -145,9 +146,9 @@ function ru() {
                 use_time=0  # Disable time for execution
                 shift
                 ;;
-            --last | \?)
+            --last | --what | -w)
                 if [ -f "$HOME/.last_ru_command" ]; then
-                    echo "Last ru command: $(cat $HOME/.last_ru_command)"
+                    echo "$(cat $HOME/.last_ru_command)"
                 else
                     echo "No previous ru command found."
                 fi
@@ -218,7 +219,8 @@ function ru() {
         # Echo the full command before execution
         [[ $verbose -eq 1 ]] && echo "Executing: $fullcmd"
 
-        echo "$fullcmd" > "$HOME/.last_ru_command"
+        echo "User typed: $user_input" > "$HOME/.last_ru_command"
+        echo "Resolved command: $fullcmd" >> "$HOME/.last_ru_command"
 
         if [[ $use_time -eq 1 ]]; then
             eval "time $fullcmd"
