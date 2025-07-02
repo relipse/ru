@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.5
+# @version 2.6
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -65,6 +65,7 @@ function ru() {
                 echo "    --rm|-r <sn>           - remove/delete short link."
                 echo "    --prefix|-p <cmd> <sn> - prefix the command with <cmd> when running the command for <sn>."
                 echo "    -n | --no-time         - run command without using the time command."
+                echo "    --last | ?             - show the last full command executed."
                 echo "    -v                     - enable verbose mode."
                 return 0
                 ;;
@@ -144,6 +145,14 @@ function ru() {
                 use_time=0  # Disable time for execution
                 shift
                 ;;
+            --last | \?)
+                if [ -f "$HOME/.last_ru_command" ]; then
+                    echo "Last ru command: $(cat $HOME/.last_ru_command)"
+                else
+                    echo "No previous ru command found."
+                fi
+                return 0
+                ;;
             --) # End of all options
                 shift
                 break
@@ -208,6 +217,9 @@ function ru() {
 
         # Echo the full command before execution
         [[ $verbose -eq 1 ]] && echo "Executing: $fullcmd"
+
+        echo "$fullcmd" > "$HOME/.last_ru_command"
+
         if [[ $use_time -eq 1 ]]; then
             eval "time $fullcmd"
         else
