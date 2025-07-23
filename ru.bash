@@ -245,14 +245,13 @@ function ru() {
             eval "$fullcmd"
         fi
     else
-        local possible=$(ls $HOME/ru | grep $sn)
-        if [[ $possible ]]; then
-            echo "Did you mean: $possible"
-        fi
-
-        #jo is a another friendly addon, try jo with the same sn
-        if [[ -d "$HOME/jo/$sn" ]]; then
-                jo "$sn"
+        local possible
+        possible=$(ls "$HOME/ru" 2>/dev/null | grep -F "$sn")
+        if [[ -n "$possible" ]]; then
+            echo "Did you mean:"
+            echo "$possible"
+        elif command -v jo >/dev/null 2>&1 && [[ -e "$HOME/jo/$sn" ]]; then
+            jo "$sn"
         else
             echo "No ru or jo command found for '$sn'."
         fi
