@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.74
+# @version 2.75
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -248,6 +248,13 @@ function ru() {
         local possible=$(ls $HOME/ru | grep $sn)
         if [[ $possible ]]; then
             echo "Did you mean: $possible"
+        fi
+
+        ;;try jo
+        if [[ -d "$HOME/jo/$sn" ]]; then
+                jo "$sn"
+        else
+            echo "No ru or jo command found for '$sn'."
         fi
     fi
 }
