@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.77
+# @version 2.78
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -250,7 +250,9 @@ function ru() {
         if [[ -n "$possible" ]]; then
             echo "Did you mean:"
             echo "$possible"
-        elif command -v jo >/dev/null 2>&1 && [[ -e "$HOME/jo/$sn" ]]; then
+        fi
+        
+        if command -v jo >/dev/null 2>&1 && [[ -e "$HOME/jo/$sn" ]]; then
             jo "$sn"
         else
             echo "No ru or jo command found for '$sn'."
