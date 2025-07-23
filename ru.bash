@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.75
+# @version 2.76
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -250,7 +250,7 @@ function ru() {
             echo "Did you mean: $possible"
         fi
 
-        ;;try jo
+        #jo is a another friendly addon, try jo with the same sn
         if [[ -d "$HOME/jo/$sn" ]]; then
                 jo "$sn"
         else
