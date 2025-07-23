@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.78
+# @version 2.79
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -253,6 +253,7 @@ function ru() {
         fi
         
         if command -v jo >/dev/null 2>&1 && [[ -e "$HOME/jo/$sn" ]]; then
+            echo "Using jo, jumping off:"    
             jo "$sn"
         else
             echo "No ru or jo command found for '$sn'."
