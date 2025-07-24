@@ -41,6 +41,7 @@ $version = null;
 if (preg_match('/@version (\d+\.\d+)/', $chunk, $matches)) {
     $version = $matches[1] ?? null;
 }
+
 $upgradeToVersion = $version;
 $home = getenv("HOME");
 echo "Home Dir: $home\n";
@@ -98,6 +99,16 @@ if ($posStartRuBashRc === false) {
         }
     }
 
+    $author = null;
+    if (preg_match('/@author (\w+)/', $content, $matches)){
+        $author = $matches[1] ?? null;
+    }
+
+    if ($author){
+        //when user types --version it should actually show the author if using this install script
+        $newRuSource = str_replace('<THE_AUTHOR>', $upgradeToVersion, $newRuSource);
+    }
+    
     //when user types --version it should actually show the version if using this install script
     $newRuSource = str_replace('<THE_VERSION>', $upgradeToVersion, $newRuSource);
     
