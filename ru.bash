@@ -151,8 +151,9 @@ function ru() {
                 shift
                 ;;
             --version)
+                ## This section gets populated/replaced by the install script
                 echo "<THE_VERSION>"
-                echo "Created by relipse"
+                echo "Created by <THE_AUTHOR>"
                 return 0
                 ;;
             -n | --no-time)
