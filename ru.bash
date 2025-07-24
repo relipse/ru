@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.80
+# @version 2.81
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -70,7 +70,7 @@ function ru() {
                 echo " -n | --no-time         - run command without using the time command."
                 echo " --last | --what | -w   - show the last full command executed."
                 echo " -v                     - enable verbose mode."
-                echo " --version              - show version
+                echo " --version              - show version and creator info."
                 echo " --sw=\"<cmd>\" | --swap - swap the command stored in the ru with another command."
                 return 0
                 ;;
