@@ -97,8 +97,10 @@ if ($posStartRuBashRc === false) {
             die("Same Version. Doing nothing.\n");
         }
     }
-    //echo "Found: ";
-    //echo $replace;
+
+    //when user types --version it should actually show the version if using this install script
+    $newRuSource = str_replace('<THE_VERSION>', $upgradeToVersion, $newRuSource);
+    
     $dest = str_replace($replace, $newRuSource, $bashRcDest);
     $bytesWritten = file_put_contents($outFile, $dest);
     if ($bytesWritten === false) {
