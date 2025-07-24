@@ -100,13 +100,13 @@ if ($posStartRuBashRc === false) {
     }
 
     $author = null;
-    if (preg_match('/@author (\w+)/', $content, $matches)){
+    if (preg_match('/@author (\w+)/', $newRuSource, $matches)){
         $author = $matches[1] ?? null;
     }
 
     if ($author){
         //when user types --version it should actually show the author if using this install script
-        $newRuSource = str_replace('<THE_AUTHOR>', $upgradeToVersion, $newRuSource);
+        $newRuSource = str_replace('<THE_AUTHOR>', $author, $newRuSource);
     }
     
     //when user types --version it should actually show the version if using this install script
