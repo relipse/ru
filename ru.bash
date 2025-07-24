@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.79
+# @version 2.80
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -70,6 +70,7 @@ function ru() {
                 echo " -n | --no-time         - run command without using the time command."
                 echo " --last | --what | -w   - show the last full command executed."
                 echo " -v                     - enable verbose mode."
+                echo " --version              - show version
                 echo " --sw=\"<cmd>\" | --swap - swap the command stored in the ru with another command."
                 return 0
                 ;;
@@ -148,6 +149,11 @@ function ru() {
             -v | --verbose)
                 verbose=1
                 shift
+                ;;
+            --version)
+                echo "<THE_VERSION>"
+                echo "Created by relipse"
+                return 0
                 ;;
             -n | --no-time)
                 use_time=0  # Disable time for execution
@@ -245,11 +251,14 @@ function ru() {
             eval "$fullcmd"
         fi
     else
+        # At this point, the ru does not exist
         local possible
         possible=$(ls "$HOME/ru" 2>/dev/null | grep -F "$sn")
         if [[ -n "$possible" ]]; then
             echo "Did you mean:"
             echo "$possible"
+        else
+         
         fi
         
         if command -v jo >/dev/null 2>&1 && [[ -e "$HOME/jo/$sn" ]]; then
