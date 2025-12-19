@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.86
+# @version 2.87
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -50,6 +50,8 @@ function ru() {
     local script_add=0
     local script_sn=""
     local script_text=""
+    local script_text_append=""
+    local script_text_prepend=""
     local script_show=0
     local script_rm=0
     
@@ -112,15 +114,37 @@ function ru() {
                 fi
                 return 0
                 ;;
+             --tprepend | --text-prepend)
+                 # ru --text-prepend <sn> <text>
+                if [[ -n "$2" && -n "$3" ]]; then
+                    script_sn="$2"
+                    script_text_prepend="$3"
+                    shift 3
+                else
+                    echo "Invalid usage. Correct usage is: ru --text-prepend <sn> \"<text>\""
+                    return 0
+                fi
+                ;;
+             --tappend | --text-append)
+                 # ru --text-append <sn> <text>
+                if [[ -n "$2" && -n "$3" ]]; then
+                    script_sn="$2"
+                    script_text_append="$3"
+                    shift 3
+                else
+                    echo "Invalid usage. Correct usage is: ru --text-append <sn> \"<text>\""
+                    return 0
+                fi
+                ;;
              -t | --text)
-                # ru --script <sn> <text>
+                # ru --text <sn> <text>
                 if [[ -n "$2" && -n "$3" ]]; then
                     script_add=1
                     script_sn="$2"
                     script_text="$3"
                     shift 3
                 else
-                    echo "Invalid usage. Correct usage is: ru --script <sn> \"<text>\""
+                    echo "Invalid usage. Correct usage is: ru --text <sn> \"<text>\""
                     return 0
                 fi
                 ;;
@@ -132,7 +156,7 @@ function ru() {
                     script_text="$2"
                     shift 2
                 else
-                    echo "Invalid usage. Correct usage is: ru --script=<sn> \"<text>\""
+                    echo "Invalid usage. Correct usage is: ru --text=<sn> \"<text>\""
                     return 0
                 fi
                 ;;
@@ -287,6 +311,33 @@ function ru() {
         local sf="$HOME/ru/$script_sn.txt"
         echo "$script_text" > "$sf"
         [[ $verbose -eq 1 ]] && echo "Saved script to $sf"
+        return 0
+    fi
+
+    if [[ -n "${script_text_prepend}" ]]; then
+        local sf="$HOME/ru/$script_sn.txt"
+        mkdir -p "$HOME/ru"
+
+        local tmp
+        tmp="$(mktemp)"
+        {
+            printf '%s\n' "$script_text_prepend"
+            [[ -f "$sf" ]] && cat "$sf"
+        } > "$tmp" && mv "$tmp" "$sf"
+
+        [[ $verbose -eq 1 ]] && echo "Prepended text to $sf"
+        return 0
+    fi
+
+    if [[ -n "${script_text_append}" ]]; then
+        local sf="$HOME/ru/$script_sn.txt"
+        mkdir -p "$HOME/ru"
+
+        # ensure file exists, then append
+        [[ -f "$sf" ]] || : > "$sf"
+        printf '%s\n' "$script_text_append" >> "$sf"
+
+        [[ $verbose -eq 1 ]] && echo "Appended text to $sf"
         return 0
     fi
 
