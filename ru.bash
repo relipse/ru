@@ -261,6 +261,35 @@ function ru() {
         return 0;
     fi
 
+        # --- Script file operations ---
+    if [[ "$script_show" -eq 1 ]]; then
+        local sf="$HOME/ru/$script_sn.txt"
+        if [[ -f "$sf" ]]; then
+            cat "$sf"
+        else
+            echo "$script_sn.txt does not exist"
+        fi
+        return 0
+    fi
+
+    if [[ "$script_rm" -eq 1 ]]; then
+        local sf="$HOME/ru/$script_sn.txt"
+        if [[ -f "$sf" ]]; then
+            rm "$sf"
+            [[ $verbose -eq 1 ]] && echo "Removed $sf"
+        else
+            echo "$script_sn.txt does not exist"
+        fi
+        return 0
+    fi
+
+    if [[ "$script_add" -eq 1 ]]; then
+        local sf="$HOME/ru/$script_sn.txt"
+        echo "$script_text" > "$sf"
+        [[ $verbose -eq 1 ]] && echo "Saved script to $sf"
+        return 0
+    fi
+
     local file=$HOME/ru/"$sn"
     # --- If there is a companion "ru script" file, print it first ---
     # Example: ru ssh-fun  -> prints ~/ru/ssh-fun.txt before running ~/ru/ssh-fun
@@ -270,8 +299,7 @@ function ru() {
         cat "$scriptfile"
         echo "-------------------"
     fi
-
-    if [ -f "$file" ]; then
+    
     if [ -f "$file" ]; then
         local fullcmd=$(cat $file)
         if [[ "$printpath" -eq 1 ]]; then
