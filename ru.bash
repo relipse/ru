@@ -30,7 +30,7 @@ function ru() {
 # @author relipse
 # @license Dual License: Public Domain and The MIT License (MIT)
 #        (Use either one, whichever you prefer)
-# @version 2.83
+# @version 2.85
 ####################################################################
     # Reset all variables that might be set
     local verbose=0
@@ -47,6 +47,11 @@ function ru() {
     local use_time=1  # Default to use time
     local user_input="ru $*"
     local switchcmd=""
+    local script_add=0
+    local script_sn=""
+    local script_text=""
+    local script_show=0
+    local script_rm=0
     
 
     if (( $# == 0 )); then
@@ -72,6 +77,9 @@ function ru() {
                 echo " -v                     - enable verbose mode."
                 echo " --version              - show version and creator info."
                 echo " --sw=\"<cmd>\" | --swap - swap the command stored in the ru with another command."
+                echo " --text|-t <sn> <text>      - add/replace a companion text file at $HOME/ru/<sn>.txt"
+                echo " --text-show|--tshow <sn>   - show the companion text file ($HOME/ru/<sn>.txt)"
+                echo " --text-rm|--trm <sn>       - remove the companion text file ($HOME/ru/<sn>.txt)"
                 return 0
                 ;;
             -s | --show)
@@ -103,6 +111,50 @@ function ru() {
                     done
                 fi
                 return 0
+                ;;
+             -t | --text)
+                # ru --script <sn> <text>
+                if [[ -n "$2" && -n "$3" ]]; then
+                    script_add=1
+                    script_sn="$2"
+                    script_text="$3"
+                    shift 3
+                else
+                    echo "Invalid usage. Correct usage is: ru --script <sn> \"<text>\""
+                    return 0
+                fi
+                ;;
+            --text=*)
+                # ru --text=<sn> "<text>"
+                script_add=1
+                script_sn="${1#*=}"
+                if [[ -n "$2" ]]; then
+                    script_text="$2"
+                    shift 2
+                else
+                    echo "Invalid usage. Correct usage is: ru --script=<sn> \"<text>\""
+                    return 0
+                fi
+                ;;
+            --text-show | --tshow)
+                if [[ -n "$2" ]]; then
+                    script_show=1
+                    script_sn="$2"
+                    shift 2
+                else
+                    echo "Invalid usage. Correct usage is: ru --script-show <sn>"
+                    return 0
+                fi
+                ;;
+            --text-rm | --trm)
+                if [[ -n "$2" ]]; then
+                    script_rm=1
+                    script_sn="$2"
+                    shift 2
+                else
+                    echo "Invalid usage. Correct usage is: ru --script-rm <sn>"
+                    return 0
+                fi
                 ;;
             -p | --prefix)
                 if [[ -n $2 && -n $3 ]]; then
@@ -209,9 +261,17 @@ function ru() {
         return 0;
     fi
 
-
-
     local file=$HOME/ru/"$sn"
+    # --- If there is a companion "ru script" file, print it first ---
+    # Example: ru ssh-fun  -> prints ~/ru/ssh-fun.txt before running ~/ru/ssh-fun
+    local scriptfile="$HOME/ru/$sn.txt"
+    if [[ -n "$sn" && -f "$scriptfile" && "$printpath" -ne 1 ]]; then
+        echo "----- $sn.txt -----"
+        cat "$scriptfile"
+        echo "-------------------"
+    fi
+
+    if [ -f "$file" ]; then
     if [ -f "$file" ]; then
         local fullcmd=$(cat $file)
         if [[ "$printpath" -eq 1 ]]; then
